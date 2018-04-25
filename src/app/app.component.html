@@ -1,0 +1,13 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<h1>The permissions of the users are: </h1>
+<div *ngIf="permissions | async as usersPermissions">
+  <div *ngFor="let user of getUsers(usersPermissions)">
+    <h2>{{user}}</h2>
+    <ul>
+      <li *ngFor="let permission of usersPermissions[user]">
+        <h3>{{permission}}</h3>
+      </li>
+    </ul>
+  </div>
+</div>
+
