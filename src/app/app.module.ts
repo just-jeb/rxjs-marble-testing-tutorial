@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import {PermissionsService} from './permissions.service';
 import {UsersService} from './users.service';
 import {HttpClientModule} from '@angular/common/http';
+import {LoggingService} from './logging.service';
 
 
 @NgModule({
@@ -16,7 +17,7 @@ import {HttpClientModule} from '@angular/common/http';
     BrowserModule,
     HttpClientModule
   ],
-  providers: [PermissionsService, UsersService],
+  providers: [PermissionsService, UsersService, LoggingService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
