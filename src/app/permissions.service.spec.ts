@@ -89,16 +89,8 @@ describe('PermissionsService.getAllUsersPermissions', () => {
   });
 
   it('Should return mapping from user ids to permissions', () => {
-    // --p
-    //   -i-|
-    // ---r-|
-    const expected = cold('---r-|', {
-      r: {
-        1: ['blah1', 'blah2'],
-        2: ['blah3']
-      }
-    });
-    expect(permissions.getAllUsersPermissions()).toBeObservable(expected);
+    // TODO: implement
+    expect(false).toBeTruthy();
   });
 
   it('Should log error if failed to get permissions', () => {
@@ -115,42 +107,17 @@ describe('PermissionsService.getAllUsersPermissions', () => {
   });
 
   it('Should log error if failed to get users', () => {
-    usersMock.getUserIds.mockReset();
-    usersMock.getUserIds.mockReturnValue(cold('--#'));
-
-    // --#
-    //   -e-|
-    // --^--!
-    permissions.getAllUsersPermissions().subscribe(() => {
-      expect(logError$).toHaveSubscriptions('--^--!');
-    });
+    // TODO: implement
+    expect(false).toBeTruthy();
   });
 
   it('Should log success after successful retrieval of permissions', () => {
-    // --u
-    //   x
-    //   y
-    //   -i-|
-    permissions.getAllUsersPermissions().subscribe(() => {
-      expect(logInfo$).toHaveSubscriptions('--^--!');
-    });
-
+    // TODO: implement
+    expect(false).toBeTruthy();
   });
 
   it('Should send permission requests for all the users in parallel', () => {
-    httpMock.post.mockReset();
-    const user1Permission$ = cold('----p|', {p: httpResponse1});
-    const user2Permission$ = cold('--p|', {p: httpResponse2});
-    // --u
-    //   ----p|
-    //   --p|
-    //       -i-|
-    // --^----!
-    // --^--!
-    httpMock.post.mockReturnValueOnce(user1Permission$).mockReturnValueOnce(user2Permission$);
-    permissions.getAllUsersPermissions().subscribe(() => {
-      expect(user1Permission$).toHaveSubscriptions('--^----!');
-      expect(user2Permission$).toHaveSubscriptions('--^--!');
-    });
+    // TODO: implement
+    expect(false).toBeTruthy();
   });
 });
