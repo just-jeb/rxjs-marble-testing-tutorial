@@ -9,7 +9,7 @@ import {UsersService} from './users.service';
 import {HttpClient} from '@angular/common/http';
 import {of} from 'rxjs/observable/of';
 import {LoggingService} from './logging.service';
-
+import {cold} from 'jest-marbles';
 
 const httpResponse1 = {
   data: JSON.stringify({
@@ -30,6 +30,8 @@ describe('PermissionsService.getAllUsersPermissions', () => {
   let usersMock;
   let httpMock;
   let logger;
+  let logInfo$;
+  let logError$;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,13 +48,29 @@ describe('PermissionsService.getAllUsersPermissions', () => {
     })
   );
 
-  beforeEach(() => {
-    httpMock.post.mockClear();
+  function mockLogger() {
+    logger.info.mockReset();
+    logger.error.mockReset();
+    logInfo$ = cold('-i-|');
+    logError$ = cold('-e-|');
+    logger.info.mockReturnValue(logInfo$);
+    logger.error.mockReturnValue(logError$);
+  }
+
+  function mockHttpPost() {
+    httpMock.post.mockReset();
     httpMock.post.mockReturnValueOnce(of(httpResponse1)).mockReturnValueOnce(of(httpResponse2));
-    usersMock.getUserIds.mockClear();
-    usersMock.getUserIds.mockReturnValue(of(users));
-    logger.info.mockClear();
-    logger.error.mockClear();
+  }
+
+  function mockUsers() {
+    usersMock.getUserIds.mockReset();
+    usersMock.getUserIds.mockReturnValue(cold('--u-|', {u: users}));
+  }
+
+  beforeEach(() => {
+    mockHttpPost();
+    mockLogger();
+    mockUsers();
   });
 
   it('Should create http post request to get permissions for each user', () => {
@@ -71,28 +89,68 @@ describe('PermissionsService.getAllUsersPermissions', () => {
   });
 
   it('Should return mapping from user ids to permissions', () => {
-    permissions.getAllUsersPermissions().subscribe(result => {
-      expect(result).toEqual({
+    // --p
+    //   -i-|
+    // ---r-|
+    const expected = cold('---r-|', {
+      r: {
         1: ['blah1', 'blah2'],
         2: ['blah3']
-      });
+      }
+    });
+    expect(permissions.getAllUsersPermissions()).toBeObservable(expected);
+  });
+
+  it('Should log error if failed to get permissions', () => {
+    httpMock.post.mockReset();
+    httpMock.post.mockReturnValueOnce(cold('-#')).mockReturnValueOnce(cold('----p|', {p: httpResponse1}));
+
+    // --u
+    //   -#
+    //    -e-|
+    // ---^--!
+    permissions.getAllUsersPermissions().subscribe(() => {
+      expect(logError$).toHaveSubscriptions('---^--!');
+    });
+  });
+
+  it('Should log error if failed to get users', () => {
+    usersMock.getUserIds.mockReset();
+    usersMock.getUserIds.mockReturnValue(cold('--#'));
+
+    // --#
+    //   -e-|
+    // --^--!
+    permissions.getAllUsersPermissions().subscribe(() => {
+      expect(logError$).toHaveSubscriptions('--^--!');
     });
   });
 
   it('Should log success after successful retrieval of permissions', () => {
+    // --u
+    //   x
+    //   y
+    //   -i-|
+    permissions.getAllUsersPermissions().subscribe(() => {
+      expect(logInfo$).toHaveSubscriptions('--^--!');
+    });
 
   });
 
-  it('Should not request permissions if failed getting users', () => {
-
+  it('Should send permission requests for all the users in parallel', () => {
+    httpMock.post.mockReset();
+    const user1Permission$ = cold('----p|', {p: httpResponse1});
+    const user2Permission$ = cold('--p|', {p: httpResponse2});
+    // --u
+    //   ----p|
+    //   --p|
+    //       -i-|
+    // --^----!
+    // --^--!
+    httpMock.post.mockReturnValueOnce(user1Permission$).mockReturnValueOnce(user2Permission$);
+    permissions.getAllUsersPermissions().subscribe(() => {
+      expect(user1Permission$).toHaveSubscriptions('--^----!');
+      expect(user2Permission$).toHaveSubscriptions('--^--!');
+    });
   });
-
-  it('Should log error if failed to get permissions', () => {
-
-  });
-
-  it('Should log error if failed to get users', () => {
-
-  });
-
 });
