@@ -8,6 +8,7 @@ import {PermissionsService} from './permissions.service';
 import {UsersService} from './users.service';
 import {HttpClient} from '@angular/common/http';
 import {of} from 'rxjs/observable/of';
+import {_throw} from 'rxjs/observable/throw';
 import {LoggingService} from './logging.service';
 
 
@@ -52,7 +53,9 @@ describe('PermissionsService.getAllUsersPermissions', () => {
     usersMock.getUserIds.mockClear();
     usersMock.getUserIds.mockReturnValue(of(users));
     logger.info.mockClear();
+    logger.info.mockReturnValue(of({}));
     logger.error.mockClear();
+    logger.error.mockReturnValue(of({}));
   });
 
   it('Should create http post request to get permissions for each user', () => {
@@ -79,20 +82,29 @@ describe('PermissionsService.getAllUsersPermissions', () => {
     });
   });
 
-  it('Should log success after successful retrieval of permissions', () => {
-
-  });
-
-  it('Should not request permissions if failed getting users', () => {
-
-  });
-
   it('Should log error if failed to get permissions', () => {
-
+    httpMock.post.mockReset();
+    httpMock.post.mockReturnValueOnce(_throw('Error')).mockReturnValueOnce(of(httpResponse2));
+    permissions.getAllUsersPermissions().subscribe(() => {
+      expect(logger.error).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('Should log error if failed to get users', () => {
-
+    usersMock.getUserIds.mockReset();
+    usersMock.getUserIds.mockReturnValue(_throw('Error'));
+    permissions.getAllUsersPermissions().subscribe(() => {
+      expect(logger.error).toHaveBeenCalledTimes(1);
+    });
   });
 
+  it('Should log success after successful retrieval of permissions', () => {
+    // TODO: implement
+    expect(false).toBeTruthy();
+  });
+
+  it('Should send permission requests for all the users in parallel', () => {
+    // TODO: implement
+    expect(false).toBeTruthy();
+  });
 });
