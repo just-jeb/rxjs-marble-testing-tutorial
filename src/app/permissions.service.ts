@@ -21,7 +21,7 @@ export class PermissionsService {
       // merge multiple user permissions objects to a single object
       map(usersPermissions => usersPermissions.reduce((acc, cur) => ({...acc, ...cur}), {})),
       // log success
-      tap(() => this.log.info('Successfully retrieved ')),
+      tap(() => this.log.info('Successfully retrieved users permissions')),
       // log error and return empty object
       catchError(e => this.log.error(`Failed to retrieve users permissions: ${e}`).pipe(map(() => ({}))))
     );
