@@ -37,7 +37,7 @@
     "@types/node": "~6.0.60",
     "codelyzer": "^4.0.1",
     "jest": "^22.4.3",
-    "jest-marbles": "^1.0.6",
+    "jest-marbles": "^1.1.1",
     "jest-preset-angular": "^5.2.1",
     "protractor": "~5.1.2",
     "ts-node": "~4.1.0",
