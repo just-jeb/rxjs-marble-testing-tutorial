@@ -7,9 +7,6 @@ import {Observable, of} from 'rxjs';
 @Injectable()
 export class UsersService {
 
-  constructor() {
-  }
-
   getUserIds(): Observable<string[]> {
     return of(['User1', 'User2', 'User3']);
   }
