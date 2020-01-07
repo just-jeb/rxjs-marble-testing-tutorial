@@ -5,6 +5,7 @@ import { UsersService } from './users.service';
 import { HttpClient } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { LoggingService } from './logging.service';
+import {cold} from 'jest-marbles';
 
 jest.mock('./users.service');
 jest.mock('./logging.service');
@@ -29,6 +30,8 @@ describe('PermissionsService.getAllUsersPermissions', () => {
   let usersMock;
   let httpMock;
   let loggerMock;
+  let logInfo$;
+  let logError$;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,17 +49,29 @@ describe('PermissionsService.getAllUsersPermissions', () => {
     }
   ));
 
+  function mockLogger() {
+    loggerMock.info.mockReset();
+    loggerMock.error.mockReset();
+    logInfo$ = cold('-i-|');
+    logError$ = cold('-e-|');
+    loggerMock.info.mockReturnValue(logInfo$);
+    loggerMock.error.mockReturnValue(logError$);
+  }
+
+  function mockHttpPost() {
+    httpMock.post.mockReset();
+    httpMock.post.mockReturnValueOnce(of(httpResponse1)).mockReturnValueOnce(of(httpResponse2));
+  }
+
+  function mockUsers() {
+    usersMock.getUserIds.mockReset();
+    usersMock.getUserIds.mockReturnValue(cold('--u-|', {u: users}));
+  }
+
   beforeEach(() => {
-    httpMock.post.mockClear();
-    httpMock.post
-      .mockReturnValueOnce(of(httpResponse1))
-      .mockReturnValueOnce(of(httpResponse2));
-    usersMock.getUserIds.mockClear();
-    usersMock.getUserIds.mockReturnValue(of(users));
-    loggerMock.info.mockClear();
-    loggerMock.info.mockReturnValue(of({}));
-    loggerMock.error.mockClear();
-    loggerMock.error.mockReturnValue(of({}));
+    mockHttpPost();
+    mockLogger();
+    mockUsers();
   });
 
   it('Should create http post request to get permissions for each user', () => {
@@ -78,30 +93,26 @@ describe('PermissionsService.getAllUsersPermissions', () => {
   });
 
   it('Should return mapping from user ids to permissions', () => {
-    permissions.getAllUsersPermissions().subscribe(result => {
-      expect(result).toEqual({
-        1: ['blah1', 'blah2'],
-        2: ['blah3']
-      });
-    });
+    // TODO: implement
+    expect(false).toBeTruthy();
   });
 
   it('Should log error if failed to get permissions', () => {
     httpMock.post.mockReset();
-    httpMock.post
-      .mockReturnValueOnce(throwError('Error'))
-      .mockReturnValueOnce(of(httpResponse2));
+    httpMock.post.mockReturnValueOnce(cold('-#')).mockReturnValueOnce(cold('----p|', {p: httpResponse1}));
+
+    // --u
+    //   -#
+    //    -e-|
+    // ---^--!
     permissions.getAllUsersPermissions().subscribe(() => {
-      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+      expect(logError$).toHaveSubscriptions('---^--!');
     });
   });
 
   it('Should log error if failed to get users', () => {
-    usersMock.getUserIds.mockReset();
-    usersMock.getUserIds.mockReturnValue(throwError('Error'));
-    permissions.getAllUsersPermissions().subscribe(() => {
-      expect(loggerMock.error).toHaveBeenCalledTimes(1);
-    });
+    // TODO: implement
+    expect(false).toBeTruthy();
   });
 
   it('Should log success after successful retrieval of permissions', () => {
