@@ -7,8 +7,7 @@ jest.mock('@angular/common/http');
 import {PermissionsService} from './permissions.service';
 import {UsersService} from './users.service';
 import {HttpClient} from '@angular/common/http';
-import {of} from 'rxjs/observable/of';
-import {_throw} from 'rxjs/observable/throw';
+import {of, throwError} from 'rxjs';
 import {LoggingService} from './logging.service';
 
 
@@ -84,7 +83,7 @@ describe('PermissionsService.getAllUsersPermissions', () => {
 
   it('Should log error if failed to get permissions', () => {
     httpMock.post.mockReset();
-    httpMock.post.mockReturnValueOnce(_throw('Error')).mockReturnValueOnce(of(httpResponse2));
+    httpMock.post.mockReturnValueOnce(throwError('Error')).mockReturnValueOnce(of(httpResponse2));
     permissions.getAllUsersPermissions().subscribe(() => {
       expect(logger.error).toHaveBeenCalledTimes(1);
     });
@@ -92,7 +91,7 @@ describe('PermissionsService.getAllUsersPermissions', () => {
 
   it('Should log error if failed to get users', () => {
     usersMock.getUserIds.mockReset();
-    usersMock.getUserIds.mockReturnValue(_throw('Error'));
+    usersMock.getUserIds.mockReturnValue(throwError('Error'));
     permissions.getAllUsersPermissions().subscribe(() => {
       expect(logger.error).toHaveBeenCalledTimes(1);
     });
