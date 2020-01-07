@@ -1,18 +1,16 @@
 import {Component} from '@angular/core';
 import {PermissionsService} from './permissions.service';
-import {Observable} from 'rxjs/Observable';
-import {map, publishReplay, refCount} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   permissions: Observable<{ [id: string]: string[] }>;
   users: Observable<string[]>;
 
-  constructor(private permissionsService: PermissionsService) {
+  constructor(permissionsService: PermissionsService) {
     this.permissions = permissionsService.getAllUsersPermissions();
   }
 

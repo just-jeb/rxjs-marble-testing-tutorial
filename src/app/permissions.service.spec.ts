@@ -1,8 +1,6 @@
 import {inject, TestBed} from '@angular/core/testing';
 
-jest.mock('./users.service');
-jest.mock('./logging.service');
-jest.mock('@angular/common/http');
+
 
 import {PermissionsService} from './permissions.service';
 import {UsersService} from './users.service';
@@ -10,6 +8,9 @@ import {HttpClient} from '@angular/common/http';
 import {of, throwError} from 'rxjs';
 import {LoggingService} from './logging.service';
 
+jest.mock('./users.service');
+jest.mock('./logging.service');
+jest.mock('@angular/common/http');
 
 const httpResponse1 = {
   data: JSON.stringify({
@@ -57,7 +58,7 @@ describe('PermissionsService.getAllUsersPermissions', () => {
     logger.error.mockReturnValue(of({}));
   });
 
-  it('Should create http post request to get permissions for each user', () => {
+  it.only('Should create http post request to get permissions for each user', () => {
     permissions.getAllUsersPermissions().subscribe(() => {
       expect(httpMock.post).toHaveBeenCalledTimes(2);
       for (const user of users) {
