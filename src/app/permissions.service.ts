@@ -1,10 +1,9 @@
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {UsersService} from './users.service';
-import {HttpClient} from '@angular/common/http';
-import {catchError, map, switchMap} from 'rxjs/operators';
-import {combineLatest} from 'rxjs/observable/combineLatest';
-import {LoggingService} from './logging.service';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { combineLatest, Observable } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { LoggingService } from './logging.service';
+import { UsersService } from './users.service';
 
 
 @Injectable()
