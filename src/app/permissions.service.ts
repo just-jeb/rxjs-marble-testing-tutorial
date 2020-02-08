@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { LoggingService } from './logging.service';
 import { UsersService } from './users.service';
 
@@ -20,7 +20,7 @@ export class PermissionsService {
       // merge multiple user permissions objects to a single object
       map(usersPermissions => usersPermissions.reduce((acc, cur) => ({...acc, ...cur}), {})),
       // log success
-      tap(() => this.log.info('Successfully retrieved users permissions')),
+      switchMap(permissions => this.log.info('Successfully retrieved ').pipe(map(() => permissions))),
       // log error and return empty object
       catchError(e => this.log.error(`Failed to retrieve users permissions: ${e}`).pipe(map(() => ({}))))
     );
